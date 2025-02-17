@@ -18,8 +18,34 @@ pub const Sequence = struct {
         self.data.deinit();
     }
 
-    pub fn append(self: Self, base: Base) !void {
-        const byte_pos = self.length / 4;
-        const bit_pos = (self.length % 4) * 2;
+    // Example : AG + C
+    pub fn append(self: *Self, base: Base) !void {
+        const byte_pos = self.length / 4; // 0
+        const bit_pos = (self.length % 4) * 2; // 4
+
+        if (byte_pos >= self.data.items.len) {
+            try self.data.append(0);
+        }
+
+        const mask = ~(@as(u8, 0b11) << @intCast(bit_pos));
+        self.data.items[byte_pos] &= mask;
+
+        const encoded_base = @as(u8, @intFromEnum(base)) & 0b11; // Ensure 2-bit value
+        self.data.items[byte_pos] |= encoded_base << @intCast(bit_pos);
+
+        self.length += 1;
     }
+
+    //00 00 10 00
+    //11 00 11 00
+    //00 00 10 00 //
+
+    //00 00 00 01
+    //00 00 00 11
+    //00 00 00 01
+    //00 01 00 00 //
+
+    //00 00 10 00
+    //00 01 00 00
+    //00 01 10 00
 };
