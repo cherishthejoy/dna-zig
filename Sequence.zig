@@ -36,6 +36,17 @@ pub const Sequence = struct {
         self.length += 1;
     }
 
+    pub fn getBase(self: Sequence, pos: usize) !Base {
+        if (pos >= self.length) return error.OutOfBounds;
+
+        const byte_pos = pos / 4;
+        const bit_pos = (pos % 4) * 2;
+
+        const value = (self.data.items[byte_pos] >> @intCast(bit_pos)) & 0b11;
+
+        return @enumFromInt(value);
+    }
+
     //00 00 10 00
     //11 00 11 00
     //00 00 10 00 //
