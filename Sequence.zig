@@ -18,8 +18,34 @@ pub const Sequence = struct {
         self.data.deinit();
     }
 
-    // Example : AG + C
-    pub fn append(self: *Self, base: Base) !void {
+    pub fn appendSequence(self: *Self, sequence: []const u8) !void {
+        for (sequence) |char| {
+            const base = switch (char) {
+                'A' => Base.A,
+                'T' => Base.T,
+                'C' => Base.C,
+                'G' => Base.G,
+                else => return error.InvalidBase,
+            };
+
+            const byte_pos = self.length / 4;
+            const bit_pos = (self.length % 4) * 2;
+
+            if (byte_pos >= self.data.items.len) {
+                try self.data.append(0);
+            }
+
+            const mask = ~(@as(u8, 0b11) << @intCast(bit_pos));
+            self.data.items[byte_pos] &= mask;
+
+            const encoded_base = @as(u8, @intFromEnum(base)) & 0b11;
+            self.data.items[byte_pos] |= encoded_base << @intCast(bit_pos);
+
+            self.length += 1;
+        }
+    }
+
+    pub fn appendBase(self: *Self, base: Base) !void {
         const byte_pos = self.length / 4; // 0
         const bit_pos = (self.length % 4) * 2; // 4
 
@@ -47,16 +73,29 @@ pub const Sequence = struct {
         return @enumFromInt(value);
     }
 
-    //00 00 10 00
-    //11 00 11 00
-    //00 00 10 00 //
+    pub fn getComplement() !Base {}
 
-    //00 00 00 01
-    //00 00 00 11
-    //00 00 00 01
-    //00 01 00 00 //
+    pub fn printSequence(self: Self) !void {
+        if (self.length == 0) return error.EmptyArray;
 
-    //00 00 10 00
-    //00 01 00 00
-    //00 01 10 00
+        const bases = [_]u8{ 'A', 'C', 'G', 'T' };
+
+        for (self.data.items, 0..) |byte, i| {
+            // b:0>8 filling the missing zero if the sequnce starts with 0 (A, C)
+            std.debug.print("Byte {}: {b:0>8}\n", .{ i, byte });
+
+            var j: usize = 6;
+            while (true) {
+                const bit_index: u3 = @intCast(j);
+                const bit = (byte >> (6 - bit_index)) & 0b11;
+
+                const base = bases[bit];
+
+                std.debug.print(" Bit {}-{}: {b:0>2} ({c})\n", .{ bit_index, bit_index + 1, bit, base });
+
+                if (j == 0) break;
+                j -= 2;
+            }
+        }
+    }
 };

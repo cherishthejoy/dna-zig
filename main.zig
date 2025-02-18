@@ -10,45 +10,18 @@ pub fn main() !void {
 
     var seq1 = Sequence.init(allocator);
     defer seq1.deinit();
-    // try seq1.append(.A);
-    // try seq1.append(.G);
-    // try seq1.append(.C);
-    // try seq1.append(.T);
+    //try seq1.appendBase(.A);
+    //try seq1.appendBase(.G);
+    //try seq1.appendBase(.C);
+    //try seq1.appendBase(.T);
     // TCGA
 
-    try seq1.append(.G);
-    try seq1.append(.C);
-    try seq1.append(.A);
-    try seq1.append(.T);
-    // TACG
+    try seq1.appendSequence("ATCGTTTC");
+    try seq1.printSequence();
 
-    // try seq1.append(.T);
-    // try seq1.append(.A);
-    // try seq1.append(.C);
-    // try seq1.append(.G);
-    // GCAT
-
-    // try seq1.append(.C);
-    // try seq1.append(.C);
-    // try seq1.append(.C);
-    // try seq1.append(.C);
-    // try seq1.append(.T);
-    // try seq1.append(.T);
-    // try seq1.append(.T);
-    // try seq1.append(.C);
-    // CCCC CTTT
-
-    std.debug.print("Sequence: {b}\n", .{seq1.data.items});
-
-    var i: u8 = 0;
-    while (i < seq1.data.items.len) : (i += 1) {
-        // b:0>8 filling the missing zero if the sequnce starts with 0 (C, A)
-        std.debug.print("Byte {}: {b:0>8}\n", .{ i, seq1.data.items[i] });
-        std.debug.print("{any}\n", .{seq1.getBase(0)});
-        std.debug.print("{any}\n", .{seq1.getBase(1)});
-        std.debug.print("{any}\n", .{seq1.getBase(2)});
-        std.debug.print("{any}\n", .{seq1.getBase(3)});
-    }
+    std.debug.print("Used size: {} bytes\n", .{seq1.data.items.len});
 
     // TODO: Fix the reverse base printing order
+
+    //std.debug.print("Size of Sequence struct: {} bytes\n", .{@sizeOf(Sequence)});
 }
