@@ -17,6 +17,7 @@ pub fn main() !void {
     // TCGA
 
     try seq1.appendSequence("ATCGTTTC");
+    try seq1.appendBase(.T);
     try seq1.printSequence();
 
     std.debug.print("Used size: {} bytes\n", .{seq1.data.items.len});

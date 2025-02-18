@@ -62,19 +62,6 @@ pub const Sequence = struct {
         self.length += 1;
     }
 
-    pub fn getBase(self: Sequence, pos: usize) !Base {
-        if (pos >= self.length) return error.OutOfBounds;
-
-        const byte_pos = pos / 4;
-        const bit_pos = (pos % 4) * 2;
-
-        const value = (self.data.items[byte_pos] >> @intCast(bit_pos)) & 0b11;
-
-        return @enumFromInt(value);
-    }
-
-    pub fn getComplement() !Base {}
-
     pub fn printSequence(self: Self) !void {
         if (self.length == 0) return error.EmptyArray;
 
@@ -97,5 +84,10 @@ pub const Sequence = struct {
                 j -= 2;
             }
         }
+    }
+
+    pub fn sequenceComplement(self: Self) void {
+        _ = self;
+        // TODO: Find a way to find the sequence complement
     }
 };
