@@ -12,17 +12,15 @@ pub fn main() !void {
     defer seq1.deinit();
 
     try seq1.appendSequence("ATCGA");
-    //try seq1.printSequence();
     try seq1.printSequenceString();
 
     var complement = try seq1.sequenceComplement(allocator);
     defer complement.deinit();
 
-    //try complement.printSequence();
     try complement.printSequenceString();
 
     std.debug.print("Used size: {} bytes\n", .{seq1.data.items.len});
-    std.debug.print("Base length: {d}", .{seq1.base_length});
+    std.debug.print("Base length: {d}\n", .{seq1.base_length});
 
-    //std.debug.print("Size of Sequence struct: {} bytes\n", .{@sizeOf(Sequence)});
+    std.debug.print("Size of Sequence struct: {} bytes\n", .{@sizeOf(Sequence)});
 }

@@ -7,7 +7,6 @@ pub const Sequence = struct {
     data: std.ArrayList(u8),
     length: usize,
     base_length: usize,
-    // TODO: Keep track of used bits in a byte
 
     pub fn init(allocator: std.mem.Allocator) Sequence {
         return .{
@@ -51,30 +50,6 @@ pub const Sequence = struct {
             try self.appendBase(base);
         }
     }
-    // This function doesn't really provide much but helps to read
-    pub fn printSequence(self: Self) !void {
-        if (self.length == 0) return error.EmptyArray;
-
-        const bases = [_]u8{ 'A', 'C', 'G', 'T' };
-
-        for (self.data.items, 0..) |byte, i| {
-            // b:0>8 filling the missing zero if the sequnce starts with 0 (A, C)
-            std.debug.print("Byte {}: {b:0>8}\n", .{ i, byte });
-
-            var j: usize = 6;
-            while (true) {
-                const bit_index: u3 = @intCast(j);
-                const bit = (byte >> (6 - bit_index)) & 0b11;
-
-                const base = bases[bit];
-
-                std.debug.print(" Bit {}-{}: {b:0>2} ({c})\n", .{ bit_index, bit_index + 1, bit, base });
-
-                if (j == 0) break;
-                j -= 2;
-            }
-        }
-    }
 
     pub fn printSequenceString(self: Self) !void {
         if (self.length == 0) return error.EmptyArray;
@@ -98,18 +73,27 @@ pub const Sequence = struct {
                 j -= 2;
             }
         }
-        std.debug.print("{s}\n", .{buffer.items});
+        std.debug.print("{s}\n", .{buffer.items[0..self.base_length]});
     }
 
     pub fn sequenceComplement(self: Self, allocator: std.mem.Allocator) !Sequence {
         var result = Sequence.init(allocator);
-        try result.data.ensureTotalCapacity(self.data.items.len);
+        //try result.data.ensureTotalCapacity(self.data.items.len);
 
         for (self.data.items) |byte| {
             try result.data.append(~byte); // Flip all bits
         }
 
         result.length = self.length;
+        result.base_length = self.base_length;
         return result;
+    }
+
+    // TODO: Implement basic DNA computing operations
+    // TODO: Concatenating strings
+
+    pub fn ligation(self: Self, other: Sequence) !Sequence {
+        // pass
+
     }
 };
