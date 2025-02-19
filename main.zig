@@ -10,19 +10,19 @@ pub fn main() !void {
 
     var seq1 = Sequence.init(allocator);
     defer seq1.deinit();
-    //try seq1.appendBase(.A);
-    //try seq1.appendBase(.G);
-    //try seq1.appendBase(.C);
-    //try seq1.appendBase(.T);
-    // TCGA
 
-    try seq1.appendSequence("ATCGTTTC");
-    try seq1.appendBase(.T);
-    try seq1.printSequence();
+    try seq1.appendSequence("ATCGA");
+    //try seq1.printSequence();
+    try seq1.printSequenceString();
+
+    var complement = try seq1.sequenceComplement(allocator);
+    defer complement.deinit();
+
+    //try complement.printSequence();
+    try complement.printSequenceString();
 
     std.debug.print("Used size: {} bytes\n", .{seq1.data.items.len});
-
-    // TODO: Fix the reverse base printing order
+    std.debug.print("Base length: {d}", .{seq1.base_length});
 
     //std.debug.print("Size of Sequence struct: {} bytes\n", .{@sizeOf(Sequence)});
 }
