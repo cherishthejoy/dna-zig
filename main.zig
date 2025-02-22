@@ -11,16 +11,24 @@ pub fn main() !void {
     var seq1 = Sequence.init(allocator);
     defer seq1.deinit();
 
-    try seq1.appendSequence("ATCGA");
+    try seq1.appendSequence("ATCG");
     try seq1.printSequenceString();
 
-    var complement = try seq1.sequenceComplement(allocator);
-    defer complement.deinit();
+    //var complement = try seq1.sequenceComplement(allocator);
+    //defer complement.deinit();
 
-    try complement.printSequenceString();
+    //try complement.printSequenceString();
 
     std.debug.print("Used size: {} bytes\n", .{seq1.data.items.len});
     std.debug.print("Base length: {d}\n", .{seq1.base_length});
 
     std.debug.print("Size of Sequence struct: {} bytes\n", .{@sizeOf(Sequence)});
+
+    var seq2 = Sequence.init(allocator);
+
+    try seq2.appendSequence("TTCC");
+    defer seq2.deinit();
+    try seq2.printSequenceString();
+
+    try seq1.ligation(seq2);
 }

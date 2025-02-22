@@ -92,8 +92,23 @@ pub const Sequence = struct {
     // TODO: Implement basic DNA computing operations
     // TODO: Concatenating strings
 
-    pub fn ligation(self: Self, other: Sequence) !Sequence {
-        // pass
+    pub fn ligation(self: Self, other: Sequence) !void {
+        // v1 = ATCG (10011100) >> 00001001
+        // v2 = TTCC (01011111) << 11110000
+        // edge = CGTT (11111001)
 
+        // v1 = ATCGCG (100110011100) >>
+        // v2 = TTCCCC (010101011111) >>
+
+        const shift_amount = self.base_length;
+
+        if (self.base_length % 2 != 0 and other.base_length % 2 != 0) return error.AlignError;
+
+        const first_half = @as(u8, self.data.items[0] >> @intCast(shift_amount));
+        const second_half = @as(u8, other.data.items[0] << @intCast(shift_amount));
+
+        const edge = first_half + second_half;
+
+        std.debug.print("Edge: {b}, Mid Point: {d}\n", .{ edge, shift_amount });
     }
 };
