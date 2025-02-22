@@ -6,13 +6,11 @@ pub const Sequence = struct {
 
     data: std.ArrayList(u8),
     length: usize,
-    base_length: usize,
 
     pub fn init(allocator: std.mem.Allocator) Sequence {
         return .{
             .data = std.ArrayList(u8).init(allocator),
             .length = 0,
-            .base_length = 0,
         };
     }
 
@@ -22,7 +20,7 @@ pub const Sequence = struct {
 
     pub fn appendBase(self: *Self, base: Base) !void {
         const byte_pos = self.length / 4;
-        const bit_pos = (self.length % 4) * 2;
+        const bit_pos = (3 - (self.length % 4)) * 2;
 
         if (byte_pos >= self.data.items.len) {
             try self.data.append(0);
@@ -46,7 +44,6 @@ pub const Sequence = struct {
                 'G' => Base.G,
                 else => return error.InvalidBase,
             };
-            self.base_length += 1;
             try self.appendBase(base);
         }
     }
@@ -61,7 +58,7 @@ pub const Sequence = struct {
         defer buffer.deinit(); // Free memory after use
 
         for (self.data.items) |byte| {
-            var j: usize = 6;
+            var j: usize = 0;
             while (true) {
                 const bit_index: u3 = @intCast(j);
                 const bit = (byte >> (6 - bit_index)) & 0b11;
@@ -69,46 +66,55 @@ pub const Sequence = struct {
 
                 try buffer.append(base);
 
-                if (j == 0) break;
-                j -= 2;
+                if (j == 6) break;
+                j += 2;
             }
         }
-        std.debug.print("{s}\n", .{buffer.items[0..self.base_length]});
+        std.debug.print("{s}\n", .{buffer.items[0..self.length]});
     }
 
     pub fn sequenceComplement(self: Self, allocator: std.mem.Allocator) !Sequence {
         var result = Sequence.init(allocator);
-        //try result.data.ensureTotalCapacity(self.data.items.len);
 
         for (self.data.items) |byte| {
             try result.data.append(~byte); // Flip all bits
         }
 
         result.length = self.length;
-        result.base_length = self.base_length;
         return result;
+    }
+
+    // Maybe make it as it can only take 4 or 8 base sequence at a time
+    pub fn ligation(self: Self, other: Sequence, allocator: std.mem.Allocator) !Sequence {
+        // v1 = ATCG (00110110) << 4 0110|0000
+        // v2 = TTCC (11110101) >> 4 0000|1111
+        // edge = CGTT (01101111)
+
+        if (self.length != 4 or other.length != 4) return error.AlignError;
+
+        var result = Sequence.init(allocator);
+        errdefer result.deinit(); // This only runs if an error occurs during the function
+
+        const shift_amount = self.length;
+
+        const first_half = @as(u8, self.data.items[0] << @intCast(shift_amount));
+        const second_half = @as(u8, other.data.items[0] >> @intCast(shift_amount));
+
+        const edge: u8 = first_half + second_half;
+        try result.data.append(edge);
+
+        result.length = self.length;
+
+        return result;
+    }
+
+    pub fn concat(self: Self, other: Sequence, allocator: std.mem.Allocator) !Sequence {
+        _ = self;
+        _ = other;
+        _ = allocator;
     }
 
     // TODO: Implement basic DNA computing operations
     // TODO: Concatenating strings
-
-    pub fn ligation(self: Self, other: Sequence) !void {
-        // v1 = ATCG (10011100) >> 00001001
-        // v2 = TTCC (01011111) << 11110000
-        // edge = CGTT (11111001)
-
-        // v1 = ATCGCG (100110011100) >>
-        // v2 = TTCCCC (010101011111) >>
-
-        const shift_amount = self.base_length;
-
-        if (self.base_length % 2 != 0 and other.base_length % 2 != 0) return error.AlignError;
-
-        const first_half = @as(u8, self.data.items[0] >> @intCast(shift_amount));
-        const second_half = @as(u8, other.data.items[0] << @intCast(shift_amount));
-
-        const edge = first_half + second_half;
-
-        std.debug.print("Edge: {b}, Mid Point: {d}\n", .{ edge, shift_amount });
-    }
+    // TODO: Make ligation() possible to input n-length sequence
 };

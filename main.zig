@@ -14,14 +14,6 @@ pub fn main() !void {
     try seq1.appendSequence("ATCG");
     try seq1.printSequenceString();
 
-    //var complement = try seq1.sequenceComplement(allocator);
-    //defer complement.deinit();
-
-    //try complement.printSequenceString();
-
-    std.debug.print("Used size: {} bytes\n", .{seq1.data.items.len});
-    std.debug.print("Base length: {d}\n", .{seq1.base_length});
-
     std.debug.print("Size of Sequence struct: {} bytes\n", .{@sizeOf(Sequence)});
 
     var seq2 = Sequence.init(allocator);
@@ -30,5 +22,15 @@ pub fn main() !void {
     defer seq2.deinit();
     try seq2.printSequenceString();
 
-    try seq1.ligation(seq2);
+    var edge1 = try seq1.ligation(seq2, allocator);
+    try edge1.printSequenceString();
+
+    defer edge1.deinit();
+
+    std.debug.print("Used size: {} bytes\n", .{seq1.data.items.len});
+    std.debug.print("Length: {d}\n", .{edge1.length});
+
+    // for (seq1.data.items) |item| {
+    //     std.debug.print("Byte: {b:0>8}\n", .{item});
+    // }
 }
