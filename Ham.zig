@@ -1,11 +1,54 @@
 const std = @import("std");
 const Graph = @import("Graph.zig").Graph;
 const Path = @import("Path.zig").Path;
+const Allocator = std.mem.Allocator;
+const ArrayList = std.ArrayList;
+
+pub fn findAllPathsFromVertex(current: usize, graph: *const Graph, current_path: *Path, all_paths: *ArrayList(Path), visited: []bool) !void {
+    visited[current] = true;
+    try current_path.vertices.append(current);
+
+    const path_copy = try current_path.clone();
+    try all_paths.append(path_copy);
+
+    for (0..graph.size) |next| {
+        if (graph.adj_matrix[current * graph.size + next] and !visited[next]) {
+            try findAllPathsFromVertex(next, graph, current_path, all_paths, visited);
+        }
+    }
+
+    _ = current_path.vertices.pop();
+    visited[current] = false;
+}
+
+pub fn findAllPaths(allocator: Allocator, graph: *const Graph) !ArrayList(Path) {
+    var all_paths = ArrayList(Path).init(allocator);
+
+    errdefer {
+        for (all_paths.items) |*path| {
+            path.deinit();
+        }
+        all_paths.deinit();
+    }
+
+    // Got to check
+    const visited = try allocator.alloc(bool, graph.size);
+    defer allocator.free(visited);
+    @memset(visited, false);
+
+    for (0..graph.size) |start| {
+        var current_path = Path.init(allocator);
+        defer current_path.deinit();
+
+        try findAllPathsFromVertex(start, graph, &current_path, &all_paths, visited);
+    }
+    return all_paths;
+}
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     defer _ = gpa.deinit();
-    const allocator = &gpa.allocator();
+    const allocator = gpa.allocator();
 
     var graph = try Graph.init(allocator, 7);
     defer graph.deinit(allocator);
@@ -30,4 +73,26 @@ pub fn main() !void {
     graph.addEdge(5, 6);
 
     graph.printGraph();
+
+    var all_paths = try findAllPaths(allocator, &graph);
+    // Clean up paths when done
+    defer {
+        for (all_paths.items) |*path| {
+            path.deinit();
+        }
+        all_paths.deinit();
+    }
+
+    // Get stdout for printing
+    const stdout = std.io.getStdOut().writer();
+    // Print number of paths found
+    try stdout.print("Found {} paths:\n", .{all_paths.items.len});
+    // Print each path
+    for (all_paths.items, 0..) |path, i| {
+        try stdout.print("Path {}: ", .{i + 1});
+        for (path.vertices.items) |vertex| {
+            try stdout.print("{} ", .{vertex});
+        }
+        try stdout.print("\n", .{});
+    }
 }

@@ -5,7 +5,7 @@ const Allocator = std.mem.Allocator;
 pub const Path = struct {
     vertices: ArrayList(usize),
 
-    pub fn init(allocator: *Allocator) Path {
+    pub fn init(allocator: Allocator) Path {
         return Path{
             .vertices = ArrayList(usize).init(allocator),
         };

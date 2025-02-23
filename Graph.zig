@@ -3,33 +3,28 @@ const ArrayList = std.ArrayList;
 const Allocator = std.mem.Allocator;
 
 pub const Graph = struct {
-    adj_matrix: [][]bool,
+    adj_matrix: []bool,
     size: usize,
 
-    pub fn init(allocator: *const Allocator, size: usize) !Graph {
-        const matrix = try allocator.alloc([]bool, size);
-        for (matrix) |*row| {
-            row.* = try allocator.alloc(bool, size);
-            @memset(row.*, false);
-        }
-
+    pub fn init(allocator: Allocator, size: usize) !Graph {
+        // Allocate a single block of memory for the adjacency matrix
+        const matrix = try allocator.alloc(bool, size * size);
+        // Initialize all connections to false
+        @memset(matrix, false);
         return Graph{
             .adj_matrix = matrix,
             .size = size,
         };
     }
 
-    pub fn deinit(self: *Graph, allocator: *const Allocator) void {
-        for (self.adj_matrix) |row| {
-            allocator.free(row);
-        }
-        allocator.free(self.adj_matrix);
-    }
-
     pub fn addEdge(self: *Graph, from: usize, to: usize) void {
         if (from >= self.size or to >= self.size) return;
-        self.adj_matrix[from][to] = true;
-        //self.adj_matrix[to][from] = true;
+        // Set connection in adjacency matrix to true
+        self.adj_matrix[from * self.size + to] = true;
+    }
+
+    pub fn deinit(self: *Graph, allocator: Allocator) void {
+        allocator.free(self.adj_matrix);
     }
 
     // Debug
