@@ -6,11 +6,13 @@ pub const Sequence = struct {
 
     data: std.ArrayList(u8),
     length: usize,
+    base_length: usize,
 
     pub fn init(allocator: std.mem.Allocator) Sequence {
         return .{
             .data = std.ArrayList(u8).init(allocator),
             .length = 0,
+            .base_length = 0,
         };
     }
 
@@ -44,6 +46,7 @@ pub const Sequence = struct {
                 'G' => Base.G,
                 else => return error.InvalidBase,
             };
+            self.base_length += 1;
             try self.appendBase(base);
         }
     }
@@ -81,10 +84,10 @@ pub const Sequence = struct {
         }
 
         result.length = self.length;
+        result.base_length = self.base_length;
         return result;
     }
 
-    // Maybe make it as it can only take 4 or 8 base sequence at a time
     pub fn ligation(self: Self, other: Sequence, allocator: std.mem.Allocator) !Sequence {
         // v1 = ATCG (00110110) << 4 0110|0000
         // v2 = TTCC (11110101) >> 4 0000|1111
