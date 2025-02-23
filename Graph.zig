@@ -18,9 +18,9 @@ pub const Graph = struct {
     }
 
     pub fn addEdge(self: *Graph, from: usize, to: usize) void {
-        if (from >= self.size or to >= self.size) return;
-        // Set connection in adjacency matrix to true
-        self.adj_matrix[from * self.size + to] = true;
+        if (from < self.size and to < self.size) {
+            self.adj_matrix[from * self.size + to] = true;
+        }
     }
 
     pub fn deinit(self: *Graph, allocator: Allocator) void {

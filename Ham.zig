@@ -70,7 +70,7 @@ pub fn main() !void {
     graph.addEdge(4, 1);
 
     graph.addEdge(5, 2);
-    graph.addEdge(5, 6);
+    graph.addEdge(5, 6); // Missing: 4-5-6 | 5-2-1-3 // Fixed
 
     graph.printGraph();
 
