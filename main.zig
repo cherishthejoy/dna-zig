@@ -28,9 +28,5 @@ pub fn main() !void {
     defer edge1.deinit();
 
     std.debug.print("Used size: {} bytes\n", .{seq1.data.items.len});
-    std.debug.print("Length: {d}\n", .{edge1.length});
-
-    // for (seq1.data.items) |item| {
-    //     std.debug.print("Byte: {b:0>8}\n", .{item});
-    // }
+    std.debug.print("Base Length: {d}\n", .{edge1.length});
 }
