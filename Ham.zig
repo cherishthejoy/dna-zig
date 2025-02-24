@@ -5,6 +5,7 @@ const Allocator = std.mem.Allocator;
 const ArrayList = std.ArrayList;
 
 pub fn findAllPathsFromVertex(current: usize, graph: *const Graph, current_path: *Path, all_paths: *ArrayList(Path), visited: []bool) !void {
+    //const table = [_]u8{ 'A', 'C', 'G', 'T', 'X', 'Y', 'Z' };
     visited[current] = true;
     try current_path.vertices.append(current);
 
@@ -80,12 +81,14 @@ pub fn main() !void {
         all_paths.deinit();
     }
 
+    const table = [_]u8{ 'A', 'C', 'G', 'T', 'X', 'Y', 'Z' };
+
     const stdout = std.io.getStdOut().writer();
     try stdout.print("Found {} paths:\n", .{all_paths.items.len});
     for (all_paths.items, 0..) |path, i| {
         try stdout.print("Path {}: ", .{i + 1});
         for (path.vertices.items) |vertex| {
-            try stdout.print("{} ", .{vertex});
+            try stdout.print("{c} ", .{table[vertex]});
         }
         try stdout.print("\n", .{});
     }
