@@ -111,13 +111,6 @@ pub const Sequence = struct {
         return result;
     }
 
-    pub fn concat(self: Self, other: Sequence, allocator: std.mem.Allocator) !Sequence {
-        _ = self;
-        _ = other;
-        _ = allocator;
-    }
-
     // TODO: Implement basic DNA computing operations
-    // TODO: Concatenating strings
     // TODO: Make ligation() possible to input n-length sequence
 };

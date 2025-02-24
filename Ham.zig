@@ -71,8 +71,6 @@ pub fn main() !void {
     graph.addEdge(5, 2);
     graph.addEdge(5, 6);
 
-    graph.printGraph();
-
     var all_paths = try findAllPaths(allocator, &graph);
     // Clean up paths when done
     defer {
