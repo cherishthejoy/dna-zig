@@ -31,7 +31,6 @@ pub fn findAllPaths(allocator: Allocator, graph: *const Graph) !ArrayList(Path) 
         all_paths.deinit();
     }
 
-    // Got to check
     const visited = try allocator.alloc(bool, graph.size);
     defer allocator.free(visited);
     @memset(visited, false);
@@ -70,7 +69,7 @@ pub fn main() !void {
     graph.addEdge(4, 1);
 
     graph.addEdge(5, 2);
-    graph.addEdge(5, 6); // Missing: 4-5-6 | 5-2-1-3 // Fixed
+    graph.addEdge(5, 6);
 
     graph.printGraph();
 
@@ -83,11 +82,8 @@ pub fn main() !void {
         all_paths.deinit();
     }
 
-    // Get stdout for printing
     const stdout = std.io.getStdOut().writer();
-    // Print number of paths found
     try stdout.print("Found {} paths:\n", .{all_paths.items.len});
-    // Print each path
     for (all_paths.items, 0..) |path, i| {
         try stdout.print("Path {}: ", .{i + 1});
         for (path.vertices.items) |vertex| {
