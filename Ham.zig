@@ -81,14 +81,15 @@ pub fn main() !void {
         all_paths.deinit();
     }
 
-    const table = [_]u8{ 'A', 'C', 'G', 'T', 'X', 'Y', 'Z' };
+    //onst table = [_]u8{ 'A', 'C', 'G', 'T', 'X', 'Y', 'Z' };
+    const seq: [7][]const u8 = .{ "ATCG", "CTGA", "GCTT", "TTCG", "AATT", "TAAG", "GTGA" };
 
     const stdout = std.io.getStdOut().writer();
     try stdout.print("Found {} paths:\n", .{all_paths.items.len});
     for (all_paths.items, 0..) |path, i| {
         try stdout.print("Path {}: ", .{i + 1});
         for (path.vertices.items) |vertex| {
-            try stdout.print("{c} ", .{table[vertex]});
+            try stdout.print("{c} ", .{seq[vertex]});
         }
         try stdout.print("\n", .{});
     }
