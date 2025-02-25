@@ -6,13 +6,11 @@ pub const Sequence = struct {
 
     data: std.ArrayList(u8),
     length: usize,
-    base_length: usize,
 
     pub fn init(allocator: std.mem.Allocator) Sequence {
         return .{
             .data = std.ArrayList(u8).init(allocator),
             .length = 0,
-            .base_length = 0,
         };
     }
 
@@ -46,7 +44,6 @@ pub const Sequence = struct {
                 'G' => Base.G,
                 else => return error.InvalidBase,
             };
-            self.base_length += 1;
             try self.appendBase(base);
         }
     }
@@ -84,7 +81,6 @@ pub const Sequence = struct {
         }
 
         result.length = self.length;
-        result.base_length = self.base_length;
         return result;
     }
 

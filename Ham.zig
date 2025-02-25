@@ -46,9 +46,10 @@ pub fn findAllPaths(allocator: Allocator, graph: *const Graph, table: []Sequence
     return all_paths;
 }
 
-pub fn toString(self: *const Sequence) []const u8 {
-    return self.data.items; // Assuming `data.items` holds the DNA bases
-}
+// TODO: Implement PCR
+// TODO: Implement Electrophoresis
+// TODO: Pure Affinity Filtering
+// We'll have to check the vin and vout as a base case
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
@@ -124,8 +125,6 @@ pub fn main() !void {
         all_paths.deinit();
     }
 
-    //const seq: [7][]const u8 = .{ "ATCG", "CTGA", "GCTT", "TTCG", "AATT", "TAAG", "GTGA" };
-
     const stdout = std.io.getStdOut().writer();
     try stdout.print("Found {} paths:\n", .{all_paths.items.len});
     for (all_paths.items, 0..) |path, i| {
@@ -138,3 +137,6 @@ pub fn main() !void {
         try stdout.print("\n", .{});
     }
 }
+
+// Longest path is 24 base long. Which is 48 bit (6 byte)
+// IF we used a base per character it would've been 24 byte (192 bit)

@@ -28,7 +28,7 @@ pub fn main() !void {
     defer seq2.deinit();
     defer edge1_complement.deinit();
 
-    std.debug.print("Size of Sequence struct: {} bytes\n", .{@sizeOf(Sequence)});
+    std.debug.print("\nSize of Sequence struct: {} bytes\n", .{@sizeOf(Sequence)});
     std.debug.print("Used size: {} bytes\n", .{seq1.data.items.len});
     std.debug.print("Base Length: {d}\n", .{edge1.length});
 }
