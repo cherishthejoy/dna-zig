@@ -73,7 +73,7 @@ pub const Sequence = struct {
                 j += 2;
             }
         }
-        std.debug.print("{s}\n", .{buffer.items[0..self.length]});
+        std.debug.print("{s}", .{buffer.items[0..self.length]});
     }
 
     pub fn sequenceComplement(self: Self, allocator: std.mem.Allocator) !Sequence {

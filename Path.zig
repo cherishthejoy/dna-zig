@@ -1,13 +1,16 @@
 const std = @import("std");
 const ArrayList = std.ArrayList;
 const Allocator = std.mem.Allocator;
+const Sequence = @import("Sequence.zig").Sequence;
 
 pub const Path = struct {
-    vertices: ArrayList(usize),
+    vertices: ArrayList(Sequence),
+    // vertices: ArrayList(usize),
 
     pub fn init(allocator: Allocator) Path {
         return Path{
-            .vertices = ArrayList(usize).init(allocator),
+            .vertices = ArrayList(Sequence).init(allocator),
+            // .vertices = ArrayList(usize).init(allocator),
         };
     }
 
