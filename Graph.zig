@@ -9,7 +9,7 @@ pub const Graph = struct {
     pub fn init(allocator: Allocator, size: usize) !Graph {
         // Allocate a single block of memory for the adjacency matrix
         const matrix = try allocator.alloc(bool, size * size);
-        // Initialize all elements as false
+        // Initialize all elements to be false
         @memset(matrix, false);
         return Graph{
             .adj_matrix = matrix,
